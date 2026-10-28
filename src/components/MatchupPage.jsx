@@ -11,6 +11,7 @@ import SaveIndicator from "./SaveIndicator";
 import PlaystyleTabs from "./PlaystyleTabs";
 
 const AUTOSAVE_DELAY_MS = 700;
+const STARTING_ITEM_MAX_GOLD = 500; // the starting items picker only lists items this cheap
 
 // backLabel: where the back link goes ("Search", "Written", ...).
 export default function MatchupPage({ game, championId, onBack, backLabel, onSaved, copied, onCopy }) {
@@ -257,6 +258,7 @@ export default function MatchupPage({ game, championId, onBack, backLabel, onSav
                   game={game}
                   label={label}
                   names={style.build[key]}
+                  maxGold={key === "start" ? STARTING_ITEM_MAX_GOLD : undefined}
                   editing={editing}
                   onChange={(names) => update({ build: { ...style.build, [key]: names } })}
                 />

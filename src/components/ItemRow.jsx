@@ -3,9 +3,11 @@ import { GameIcon } from "./Icon";
 import IconPicker from "./IconPicker";
 
 // One row of items (e.g. "Core"). In edit mode: + to add, × to remove, drag to reorder.
-export default function ItemRow({ game, label, names, editing, onChange }) {
+// maxGold: if given, the picker only lists items costing that much or less (used for starting items).
+export default function ItemRow({ game, label, names, editing, onChange, maxGold }) {
   const [picking, setPicking] = useState(false);
   const dragFrom = useRef(null);
+  const options = maxGold ? game.items.filter((item) => item.gold <= maxGold) : game.items;
 
   function move(from, to) {
     if (from === null || from === to) return;
@@ -47,8 +49,9 @@ export default function ItemRow({ game, label, names, editing, onChange }) {
 
       {picking && (
         <IconPicker
-          title={`Add item · ${label}`}
-          options={game.items}
+          title={maxGold ? `Add item · ${label} (${maxGold} gold or less)` : `Add item · ${label}`}
+          options={options}
+          favoritesKey="items"
           onPick={(name) => {
             onChange([...names, name]);
             setPicking(false);

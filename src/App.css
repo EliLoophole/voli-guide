@@ -332,6 +332,18 @@ button.slot:hover .icon, button.slot:hover .plus { box-shadow: var(--glow); }
 .picker-item:hover { background: var(--surface-2); border-color: var(--border-strong); }
 .picker-item:hover .icon { box-shadow: var(--glow); }
 .picker-item span { font-size: 0.72rem; color: var(--muted); text-align: center; line-height: 1.2; }
+.picker-cell { position: relative; }
+.picker-cell .picker-item { width: 100%; }
+/* Favorite star: small, on the icon's bottom-right corner. Shows on hover, and stays (gold) once starred. */
+.fav-star {
+  position: absolute; top: 40px; left: calc(50% + 12px); /* icon is 44px, centered, 8px from the top */
+  width: 16px; height: 16px; padding: 0; line-height: 14px; font-size: 10px;
+  border-radius: 50%; border: 1px solid var(--border-strong); background: var(--surface-2); color: var(--muted);
+  opacity: 0; transition: opacity 0.15s, color 0.15s;
+}
+.picker-cell:hover .fav-star, .fav-star:focus-visible { opacity: 1; }
+.fav-star:hover { color: var(--even); }
+.fav-star.on { opacity: 1; color: var(--even); border-color: rgba(231, 195, 90, 0.5); }
 .modal-foot { display: flex; gap: 10px; padding: 12px 18px; border-top: 1px solid var(--border); }
 
 /* ───────── Narrow windows ───────── */
