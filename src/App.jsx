@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { loadGameData, shortPatch, splashUrl } from "./lib/ddragon";
 import { listGuides } from "./lib/storage";
+import { currentVersion } from "./lib/updates";
 import SearchBar from "./components/SearchBar";
 import Home from "./components/Home";
 import MatchupPage from "./components/MatchupPage";
@@ -50,7 +51,8 @@ export default function App() {
         {/* Home has its own big search bar, so the small one only shows on matchup pages */}
         {game && selected && <SearchBar champions={game.champions} written={written} onSelect={setSelected} />}
         <UpdateNotice />
-        {game && <span className="patch-tag">Patch {shortPatch(game.version)}</span>}
+        {/* Game patch, then this app's version (so you can tell an update worked) */}
+        {game && <span className="patch-tag">Patch {shortPatch(game.version)} · v{currentVersion}</span>}
       </header>
 
       <main>

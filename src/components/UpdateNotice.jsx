@@ -5,6 +5,7 @@ import { relaunch } from "@tauri-apps/plugin-process";
 import { checkForUpdate, currentVersion, RELEASES_URL } from "../lib/updates";
 
 const inDesktopApp = "__TAURI_INTERNALS__" in window;
+const RECHECK_MS = 30 * 60 * 1000; // while the app is open, look again every 30 minutes
 
 // Top-bar button that only appears when a newer version is on GitHub.
 // Desktop app: one click downloads it, installs it and restarts.
@@ -14,12 +15,25 @@ export default function UpdateNotice() {
   const [status, setStatus] = useState("idle"); // "idle" | "downloading" | "error"
   const [percent, setPercent] = useState(0);
 
-  // Check once when the app starts. If offline or GitHub is down, just stay quiet.
+  // Check when the app starts, then every RECHECK_MS until an update turns up
+  // (so a release published while the app is open still shows). If offline or GitHub is down, just stay quiet.
   useEffect(() => {
-    const checking = inDesktopApp
-      ? check() // the updater plugin: reads latest.json from the newest release
-      : checkForUpdate().then((version) => version && { version });
-    checking.then((u) => u && setUpdate(u)).catch((e) => console.warn("Couldn't check for updates", e));
+    let timer;
+    function checkNow() {
+      const checking = inDesktopApp
+        ? check() // the updater plugin: reads latest.json from the newest release
+        : checkForUpdate().then((version) => version && { version });
+      checking
+        .then((u) => {
+          if (!u) return;
+          setUpdate(u);
+          clearInterval(timer); // found one, no need to keep looking
+        })
+        .catch((e) => console.warn("Couldn't check for updates", e));
+    }
+    checkNow();
+    timer = setInterval(checkNow, RECHECK_MS);
+    return () => clearInterval(timer);
   }, []);
 
   if (!update) return null;
