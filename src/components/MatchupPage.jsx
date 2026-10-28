@@ -228,7 +228,9 @@ export default function MatchupPage({ game, championId, onBack, onSaved, copied,
 
       {guide && (
         <>
-          <div className="guide-grid">
+          {/* All the cards in one box. Editing: two columns with full-width text sections.
+              Reading: "board" layout that fits everything on one screen (styled in App.css). */}
+          <div className={editing ? "guide-cards editing" : "guide-cards board"}>
             <section className="card">
               <h2>Runes</h2>
               <RuneEditor game={game} runes={style.runes} editing={editing} onChange={(runes) => update({ runes })} />
@@ -259,17 +261,17 @@ export default function MatchupPage({ game, championId, onBack, onSaved, copied,
                 />
               ))}
             </section>
-          </div>
 
-          {SECTIONS.map((s) => (
-            <TextSection
-              key={s.key}
-              label={s.label}
-              value={style[s.key]}
-              editing={editing}
-              onChange={(text) => update({ [s.key]: text })}
-            />
-          ))}
+            {SECTIONS.map((s) => (
+              <TextSection
+                key={s.key}
+                label={s.label}
+                value={style[s.key]}
+                editing={editing}
+                onChange={(text) => update({ [s.key]: text })}
+              />
+            ))}
+          </div>
 
           {guide.updated && (
             <p className="muted small footer-note">Last edited {new Date(guide.updated).toLocaleString()}</p>

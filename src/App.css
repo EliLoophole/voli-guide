@@ -229,10 +229,29 @@ main { max-width: 1200px; margin: 0 auto; padding: 24px 28px 64px; }
 .save-indicator.error .save-dot { background: var(--hard); }
 @keyframes pulse { to { opacity: 0.3; } }
 
-.guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; } /* loading skeleton */
 .card { padding: 20px 22px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
-.text-section { margin-bottom: 16px; }
 .footer-note { text-align: right; }
+
+/* Editing: runes | spells & build side by side, then each text section full width */
+.guide-cards.editing { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.guide-cards.editing .text-section { grid-column: 1 / -1; }
+
+/* Reading ("board"): everything on one screen, so you can glance at it mid-game.
+   Cards flow top to bottom in up to 4 columns, like a newspaper, and are only as tall as
+   their content, so short cards don't leave gaps. Columns are at least 300px wide,
+   so a smaller window just gets fewer columns. */
+main:has(.guide-cards.board) { max-width: 1800px; } /* use the whole width of a full-screen window */
+.guide-cards.board { columns: 4 300px; column-gap: 12px; }
+.board .card { break-inside: avoid; margin-bottom: 12px; padding: 14px 16px; }
+.board h2 { margin-bottom: 10px; }
+.board .mt { margin-top: 14px; }
+.board .rune-col { gap: 6px; }
+.board .slot { flex-direction: row; gap: 8px; } /* spell name beside its icon, not under it */
+.board .item-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.board .item-row .label { width: 112px; flex: none; margin: 0; } /* "Core" etc. to the left of the items */
+.board .item-row:last-child { margin-bottom: 0; }
+.board .prose { font-size: 0.93rem; }
 
 /* Runes */
 .rune-view { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -319,7 +338,7 @@ button.slot:hover .icon, button.slot:hover .plus { box-shadow: var(--glow); }
 @media (max-width: 860px) {
   main { padding: 16px; }
   .topbar { padding: 10px 16px; gap: 12px; }
-  .guide-grid, .text-edit, .rune-view { grid-template-columns: 1fr; }
+  .guide-grid, .guide-cards.editing, .text-edit, .rune-view { grid-template-columns: 1fr; }
   .patch-tag { display: none; }
   .home-hero h1 { font-size: 2rem; }
 }
