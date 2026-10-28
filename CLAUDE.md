@@ -35,6 +35,11 @@ TypeScript) + Vite. See README.md for commands and the project map.
 - The first `npm run tauri dev` compiles for ~2 minutes on all 8 cores; `src-tauri/target` grows
   to ~4 GB. `cargo clean` (in `src-tauri`) is always safe.
 - Vite uses fixed port 1420 (`strictPort`); stop other dev servers before `tauri dev`.
+- After an icon change, Windows may keep showing the old taskbar icon for the running app: the
+  window only sets a small icon, so the taskbar uses Explorer's cached exe icon. The installed exe
+  is fine. `ie4uinit -show` and re-pinning didn't help; deleting `%LOCALAPPDATA%\IconCache.db` and
+  `%LOCALAPPDATA%\Microsoft\Windows\Explorer\iconcache_*.db` with Explorer stopped, then
+  restarting it, did (2026-10-28). Ask before restarting Explorer.
 
 ## Releases
 - The version lives only in `package.json` (`tauri.conf.json` has `"version": "../package.json"`;
