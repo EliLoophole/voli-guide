@@ -1,4 +1,5 @@
-// Checks GitHub for a newer published release of this app.
+// Checks GitHub for a newer published release of this app. Used in the browser
+// preview; the desktop app uses the updater plugin instead (see UpdateNotice.jsx).
 // GitHub's "latest release" skips drafts, so a new version only shows up
 // here after you click Publish on the Releases page.
 

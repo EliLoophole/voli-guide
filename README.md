@@ -27,8 +27,18 @@ git push --follow-tags   # pushes the commit and the tag, which starts the build
 
 The build takes ~10–15 minutes (watch it on the repo's **Actions** tab, or `gh run watch`).
 When it finishes, a **draft** release appears on the **Releases** page with the
-`-setup.exe` attached. Check it and click **Publish**. Once it's published, older copies
-of the app show an **Update available** button in the top bar that opens the download page.
+`-setup.exe` attached. Check it and click **Publish**. Once it's published, installed copies
+of the app show an **Update to v…** button in the top bar: one click downloads, installs and
+restarts. (Versions before 0.1.3 don't have this and need one manual install.)
+
+### Update signing key (one-time setup)
+
+Updates are signed so the app only installs files you built. The private key lives at
+`%USERPROFILE%\.tauri\voli-guide.key` and is **not** in git. Back it up (with its password)
+in a password manager: if it's lost, installed apps can't update anymore and everyone has to
+reinstall by hand once. The public half is `plugins.updater.pubkey` in `src-tauri/tauri.conf.json`.
+GitHub gets the private key through two repo secrets, `TAURI_SIGNING_PRIVATE_KEY` and
+`TAURI_SIGNING_PRIVATE_KEY_PASSWORD`, which the release workflow reads.
 
 The version number only lives in `package.json`; the app reads it from there.
 The installer isn't code-signed, so Windows shows "Windows protected your PC" the first

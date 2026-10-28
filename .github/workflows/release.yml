@@ -36,8 +36,13 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Signs the update files so installed apps can trust them (see README).
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: ${{ github.ref_name }}
           releaseName: Voli Guide ${{ github.ref_name }}
           releaseBody: Download the `-setup.exe` below to install. Windows may warn that the app is unrecognized; click "More info" then "Run anyway".
           releaseDraft: true
+          # latest.json (what installed apps check) points at the -setup.exe, matching how the app is installed.
+          updaterJsonPreferNsis: true
