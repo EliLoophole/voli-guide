@@ -1,51 +1,73 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
+import { useCallback, useEffect, useState } from "react";
+import { loadGameData, shortPatch } from "./lib/ddragon";
+import { listGuides } from "./lib/storage";
+import SearchBar from "./components/SearchBar";
+import ChampionGrid from "./components/ChampionGrid";
+import MatchupPage from "./components/MatchupPage";
+import { Bolt } from "./components/Icon";
 import "./App.css";
 
-function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+export default function App() {
+  const [game, setGame] = useState(null);
+  const [loadError, setLoadError] = useState(null);
+  const [written, setWritten] = useState(new Set()); // champion ids with a guide
+  const [selected, setSelected] = useState(null); // champion id being viewed
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
+  const loadGame = useCallback(() => {
+    setLoadError(null);
+    loadGameData()
+      .then(setGame)
+      .catch((e) => setLoadError(e.message));
+  }, []);
+
+  const refreshWritten = useCallback(() => {
+    listGuides()
+      .then((ids) => setWritten(new Set(ids)))
+      .catch((e) => console.error("Couldn't list guides", e));
+  }, []);
+
+  useEffect(() => {
+    loadGame();
+    refreshWritten();
+  }, [loadGame, refreshWritten]);
 
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
+    <div className="app">
+      <header className="topbar">
+        <button className="brand" onClick={() => setSelected(null)}>
+          <Bolt />
+          <span>Voli Guide</span>
+        </button>
+        {game && <SearchBar champions={game.champions} written={written} onSelect={setSelected} />}
+        {game && <span className="patch-tag">Patch {shortPatch(game.version)}</span>}
+      </header>
 
-      <div className="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
+      <main>
+        {loadError && (
+          <div className="state-card">
+            <h2>Couldn't reach Data Dragon</h2>
+            <p className="muted">Check your internet connection. Riot's game data loads from the web.</p>
+            <p className="muted small">{loadError}</p>
+            <button className="btn primary" onClick={loadGame}>Try again</button>
+          </div>
+        )}
 
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
+        {!game && !loadError && <ChampionGrid.Skeleton />}
+
+        {game && !selected && (
+          <ChampionGrid champions={game.champions} written={written} onSelect={setSelected} />
+        )}
+
+        {game && selected && (
+          <MatchupPage
+            key={selected}
+            game={game}
+            championId={selected}
+            onBack={() => setSelected(null)}
+            onSaved={refreshWritten}
+          />
+        )}
+      </main>
+    </div>
   );
 }
-
-export default App;

@@ -1,6 +1,6 @@
-{
+﻿{
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "voli-guide",
+  "productName": "Voli Guide",
   "version": "0.1.0",
   "identifier": "com.elija.voli-guide",
   "build": {
@@ -12,9 +12,12 @@
   "app": {
     "windows": [
       {
-        "title": "voli-guide",
-        "width": 800,
-        "height": 600
+        "title": "Voli Guide",
+        "width": 1200,
+        "height": 820,
+        "minWidth": 760,
+        "minHeight": 560,
+        "dragDropEnabled": false
       }
     ],
     "security": {
