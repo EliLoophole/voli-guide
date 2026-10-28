@@ -3,12 +3,19 @@
 #   npm version patch          (bumps 0.1.0 -> 0.1.1, commits, tags v0.1.1)
 #   git push --follow-tags
 # Then open the repo's Releases page, check the draft, and click Publish.
+#
+# It also runs on every push to main, but only compiles (no installer, no release).
+# That fills the Rust cache: GitHub only shares caches made on main with tag builds,
+# so without this every release recompiled everything from scratch (~7 minutes).
 
 name: Release
 
 on:
   push:
     tags: ["v*"]
+    branches: [main]
+    # Pushes that only change notes don't need a rebuild. (Tag pushes always build.)
+    paths-ignore: ["**.md"]
 
 permissions:
   contents: write # needed to create the release
@@ -27,13 +34,21 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
 
       # Reuses compiled Rust code between runs, so later builds are much faster.
+      # Only main saves the cache; tag builds just use it.
       - uses: swatinem/rust-cache@v2
         with:
           workspaces: "./src-tauri -> target"
+          save-if: ${{ github.ref == 'refs/heads/main' }}
 
       - run: npm ci
 
-      - uses: tauri-apps/tauri-action@v0
+      # On main: compile only, to keep the cache up to date.
+      - if: github.ref == 'refs/heads/main'
+        run: npx tauri build --no-bundle
+
+      # On a version tag: build the installers and make the draft release.
+      - if: startsWith(github.ref, 'refs/tags/')
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Signs the update files so installed apps can trust them (see README).

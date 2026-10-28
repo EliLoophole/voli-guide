@@ -51,8 +51,12 @@ TypeScript) + Vite. See README.md for commands and the project map.
 - The version lives only in `package.json` (`tauri.conf.json` has `"version": "../package.json"`;
   the version in `Cargo.toml` is unused).
 - Release flow: `npm version patch` then `git push --follow-tags`. GitHub Actions
-  (`.github/workflows/release.yml`) builds a **draft** release with `-setup.exe` and `.msi` in
-  ~7 minutes. Publishing a draft is the user's decision; ask first.
+  (`.github/workflows/release.yml`) builds a **draft** release with `-setup.exe` and `.msi`.
+  Publishing a draft is the user's decision; ask first.
+- The same workflow runs on pushes to `main` (except `.md`-only) as a compile-only
+  `tauri build --no-bundle`, which is the only run that saves the Rust cache. Tag builds can
+  only restore caches made on `main`, so before this (up to v0.1.3) every release was a cold
+  ~7 minute Rust compile.
 - Repo is public: https://github.com/EliLoophole/voli-guide. Don't force-push or move tags.
   `v0.1.0` is a failed build with no release; `v0.1.1` is the first published release.
 

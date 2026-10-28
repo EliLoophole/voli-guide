@@ -25,7 +25,10 @@ npm version patch        # 0.1.0 -> 0.1.1 (use "minor" for 0.2.0); commits + tag
 git push --follow-tags   # pushes the commit and the tag, which starts the build
 ```
 
-The build takes ~10–15 minutes (watch it on the repo's **Actions** tab, or `gh run watch`).
+The build takes a few minutes (watch it on the repo's **Actions** tab, or `gh run watch`).
+Every push to `main` also runs a compile-only build that keeps the Rust cache warm, so
+release builds don't recompile everything. GitHub deletes caches unused for 7 days, so the
+first release after a long break takes longer (~8 minutes).
 When it finishes, a **draft** release appears on the **Releases** page with the
 `-setup.exe` attached. Check it and click **Publish**. Once it's published, installed copies
 of the app show an **Update to v…** button in the top bar: one click downloads, installs and
