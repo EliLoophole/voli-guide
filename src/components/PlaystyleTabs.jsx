@@ -30,6 +30,7 @@ export default function PlaystyleTabs({
               autoFocus={focusName} // only right after adding a tab
               onFocus={(e) => e.target.select()} // select the old name so typing replaces it
               onChange={(e) => onRename(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && e.target.blur()} // Enter = done typing the name
               aria-label="Playstyle name"
             />
             <span className="pencil" aria-hidden="true">✎</span>
