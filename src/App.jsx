@@ -11,6 +11,11 @@ import "./App.css";
 
 const HOME_SPLASH = splashUrl("Volibear", 1); // skin 1 = Thunder Lord Volibear
 
+// The home screen as it first looks: champion list closed, "All" filter, scrolled to the top.
+const HOME_START = { browsing: false, filter: "all", scrollY: 0 };
+// What the matchup page's back link says, depending on where it goes back to.
+const BACK_LABELS = { all: "All champions", written: "Written", todo: "Not written" };
+
 export default function App() {
   const [game, setGame] = useState(null);
   const [loadError, setLoadError] = useState(null);
@@ -19,6 +24,8 @@ export default function App() {
   // A playstyle copied with "Copy", for pasting into another matchup: { from: "Aatrox", style } or null.
   // Kept here (not on the matchup page) so it survives switching champions.
   const [copied, setCopied] = useState(null);
+  // How the home screen looked when you opened a matchup, so "← Back" returns to the same view.
+  const [home, setHome] = useState(HOME_START);
 
   const loadGame = useCallback(() => {
     setLoadError(null);
@@ -38,18 +45,34 @@ export default function App() {
     refreshWritten();
   }, [loadGame, refreshWritten]);
 
+  function openMatchup(championId) {
+    if (!selected) {
+      // Leaving home: remember the scroll. (Read it now; the setHome function runs later, after the scrollTo below.)
+      const scrollY = window.scrollY;
+      setHome((h) => ({ ...h, scrollY }));
+    }
+    setSelected(championId);
+    window.scrollTo(0, 0);
+  }
+
+  // The logo always goes to a fresh start screen; the back link returns to where you were.
+  function goHomeFresh() {
+    setHome(HOME_START);
+    setSelected(null);
+  }
+
   return (
     <div className="app">
       {/* Splash art behind the home screen (styled in App.css under "Home") */}
       {!selected && <div className="home-bg" style={{ "--splash": `url(${HOME_SPLASH})` }} />}
 
       <header className="topbar">
-        <button className="brand" onClick={() => setSelected(null)}>
+        <button className="brand" onClick={goHomeFresh}>
           <Bolt />
           <span>Voli Guide</span>
         </button>
         {/* Home has its own big search bar, so the small one only shows on matchup pages */}
-        {game && selected && <SearchBar champions={game.champions} written={written} onSelect={setSelected} />}
+        {game && selected && <SearchBar champions={game.champions} written={written} onSelect={openMatchup} />}
         <UpdateNotice />
         {/* Game patch, then this app's version (so you can tell an update worked) */}
         {game && <span className="patch-tag">Patch {shortPatch(game.version)} · v{currentVersion}</span>}
@@ -67,7 +90,9 @@ export default function App() {
 
         {!game && !loadError && <Home.Skeleton />}
 
-        {game && !selected && <Home champions={game.champions} written={written} onSelect={setSelected} />}
+        {game && !selected && (
+          <Home champions={game.champions} written={written} onSelect={openMatchup} view={home} onViewChange={setHome} />
+        )}
 
         {game && selected && (
           <MatchupPage
@@ -75,6 +100,7 @@ export default function App() {
             game={game}
             championId={selected}
             onBack={() => setSelected(null)}
+            backLabel={home.browsing ? BACK_LABELS[home.filter] : "Search"}
             onSaved={refreshWritten}
             copied={copied}
             onCopy={setCopied}

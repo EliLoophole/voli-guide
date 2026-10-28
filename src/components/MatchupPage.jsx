@@ -12,7 +12,8 @@ import PlaystyleTabs from "./PlaystyleTabs";
 
 const AUTOSAVE_DELAY_MS = 700;
 
-export default function MatchupPage({ game, championId, onBack, onSaved, copied, onCopy }) {
+// backLabel: where the back link goes ("Search", "Written", ...).
+export default function MatchupPage({ game, championId, onBack, backLabel, onSaved, copied, onCopy }) {
   const champ = game.champion(championId);
   const voli = game.champion("Volibear");
   const patch = shortPatch(game.version);
@@ -142,7 +143,7 @@ export default function MatchupPage({ game, championId, onBack, onSaved, copied,
   return (
     <article className="matchup">
       <header className="hero" style={{ "--splash": `url(${champ.splash})` }}>
-        <button className="link-btn" onClick={onBack}>← All champions</button>
+        <button className="link-btn" onClick={onBack}>← {backLabel}</button>
 
         <div className="hero-main">
           <div className="vs">

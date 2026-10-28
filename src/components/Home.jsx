@@ -1,17 +1,29 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import SearchBar from "./SearchBar";
 import ChampionGrid from "./ChampionGrid";
 
 // Start screen: a big search bar in the middle, with the full champion grid one click away.
-export default function Home({ champions, written, onSelect }) {
-  const [browsing, setBrowsing] = useState(false);
+// view = { browsing, filter, scrollY } lives in App, so going back from a matchup returns to the same view.
+export default function Home({ champions, written, onSelect, view, onViewChange }) {
   const gridRef = useRef(null);
+  const opening = useRef(false); // true right after clicking "Browse all champions"
   const count = champions.filter((c) => written.has(c.id)).length;
 
-  // When the grid opens, scroll down to it.
+  // Coming back from a matchup: scroll to where you were. ([] = only when the home screen first shows.)
   useEffect(() => {
-    if (browsing) gridRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [browsing]);
+    window.scrollTo(0, view.scrollY);
+  }, []);
+
+  // When you open the grid, scroll down to it. (Not when coming back with it already open.)
+  useEffect(() => {
+    if (opening.current) gridRef.current?.scrollIntoView({ behavior: "smooth" });
+    opening.current = false;
+  }, [view.browsing]);
+
+  function toggleBrowsing() {
+    opening.current = !view.browsing;
+    onViewChange({ ...view, browsing: !view.browsing });
+  }
 
   return (
     <>
@@ -21,14 +33,20 @@ export default function Home({ champions, written, onSelect }) {
           <strong className="accent">{count}</strong> / {champions.length} guides written
         </p>
         <SearchBar champions={champions} written={written} onSelect={onSelect} large autoFocus />
-        <button className="link-btn" onClick={() => setBrowsing((b) => !b)}>
-          {browsing ? "Hide champion list" : "Browse all champions"}
+        <button className="link-btn" onClick={toggleBrowsing}>
+          {view.browsing ? "Hide champion list" : "Browse all champions"}
         </button>
       </section>
 
-      {browsing && (
+      {view.browsing && (
         <div ref={gridRef} className="home-browse">
-          <ChampionGrid champions={champions} written={written} onSelect={onSelect} />
+          <ChampionGrid
+            champions={champions}
+            written={written}
+            onSelect={onSelect}
+            filter={view.filter}
+            setFilter={(filter) => onViewChange({ ...view, filter })}
+          />
         </div>
       )}
     </>

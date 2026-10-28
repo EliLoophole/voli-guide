@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Icon from "./Icon";
 
 const FILTERS = [
@@ -7,9 +6,8 @@ const FILTERS = [
   { key: "todo", label: "Not written" },
 ];
 
-export default function ChampionGrid({ champions, written, onSelect }) {
-  const [filter, setFilter] = useState("all");
-
+// filter / setFilter come from App, so the chosen filter is still there after visiting a matchup.
+export default function ChampionGrid({ champions, written, onSelect, filter, setFilter }) {
   const shown = champions.filter((c) => {
     if (filter === "written") return written.has(c.id);
     if (filter === "todo") return !written.has(c.id);
