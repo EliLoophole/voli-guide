@@ -1,0 +1,43 @@
+# Builds the Windows installer in the cloud and attaches it to a draft GitHub Release.
+# Runs when you push a version tag, e.g.:
+#   npm version patch          (bumps 0.1.0 -> 0.1.1, commits, tags v0.1.1)
+#   git push --follow-tags
+# Then open the repo's Releases page, check the draft, and click Publish.
+
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write # needed to create the release
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      # Reuses compiled Rust code between runs, so later builds are much faster.
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - run: npm ci
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: Voli Guide ${{ github.ref_name }}
+          releaseBody: Download the `-setup.exe` below to install. Windows may warn that the app is unrecognized; click "More info" then "Run anyway".
+          releaseDraft: true

@@ -16,6 +16,23 @@ npm run check        # check your guides for typos / removed items
 npm run tauri build  # make an installer in src-tauri/target/release/bundle
 ```
 
+## Make a new release (installer)
+
+GitHub builds the Windows installer for you whenever you push a version tag.
+
+```bash
+npm version patch        # 0.1.0 -> 0.1.1 (use "minor" for 0.2.0); commits + tags v0.1.1
+git push --follow-tags   # pushes the commit and the tag, which starts the build
+```
+
+The build takes ~10–15 minutes (watch it on the repo's **Actions** tab, or `gh run watch`).
+When it finishes, a **draft** release appears on the **Releases** page with the
+`-setup.exe` attached. Check it and click **Publish**.
+
+The version number only lives in `package.json`; the app reads it from there.
+The installer isn't code-signed, so Windows shows "Windows protected your PC" the first
+time. Click **More info → Run anyway**.
+
 ## Where guides are saved
 
 - Desktop app: one JSON file per champion in `Documents/VoliGuides` (e.g. `Darius.json`).
