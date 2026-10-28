@@ -15,6 +15,9 @@ export default function App() {
   const [loadError, setLoadError] = useState(null);
   const [written, setWritten] = useState(new Set()); // champion ids with a guide
   const [selected, setSelected] = useState(null); // champion id being viewed
+  // A playstyle copied with "Copy", for pasting into another matchup: { from: "Aatrox", style } or null.
+  // Kept here (not on the matchup page) so it survives switching champions.
+  const [copied, setCopied] = useState(null);
 
   const loadGame = useCallback(() => {
     setLoadError(null);
@@ -71,6 +74,8 @@ export default function App() {
             championId={selected}
             onBack={() => setSelected(null)}
             onSaved={refreshWritten}
+            copied={copied}
+            onCopy={setCopied}
           />
         )}
       </main>

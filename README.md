@@ -47,7 +47,9 @@ time. Click **More info → Run anyway**.
 ## Where guides are saved
 
 - Desktop app: one JSON file per champion in `Documents/VoliGuides` (e.g. `Darius.json`).
-  You can back up that folder or edit files by hand.
+  You can back up that folder or edit files by hand. Each file holds a list of `playstyles`
+  (the tabs on the matchup page). Guides saved before playstyles existed are converted when
+  opened, and the original file is copied to `VoliGuides/_before-playstyles` first.
 - Browser preview (`npm run dev`): browser storage only. Handy for trying UI changes.
 
 ## Project map
@@ -59,13 +61,14 @@ time. Click **More info → Run anyway**.
 | `src/components/SearchBar.jsx` | Champion search (`/` to focus, arrows + Enter) |
 | `src/components/ChampionGrid.jsx` | "Browse all champions" grid with written/not-written filter |
 | `src/components/MatchupPage.jsx` | One matchup: view/edit toggle, autosave |
+| `src/components/PlaystyleTabs.jsx` | Playstyle tabs: switch, and while editing rename / add / duplicate / delete, or copy one and paste it into another matchup |
 | `src/components/RuneEditor.jsx` | Rune tree + rune picking |
 | `src/components/ItemRow.jsx` / `SpellSlots.jsx` / `IconPicker.jsx` | Build, spells, and the icon picker pop-up |
 | `src/components/TextSection.jsx` | Markdown text sections with live preview |
 | `src/lib/ddragon.js` | Fetches champions/items/runes/spells, finds them by name |
 | `src/lib/storage.js` | `listGuides` / `loadGuide` / `saveGuide` — the only code that touches files |
 | `src/lib/updates.js` / `src/components/UpdateNotice.jsx` | On startup, asks GitHub for the latest published release and shows a button if it's newer |
-| `src/lib/guideTemplate.js` | The shape of a guide and its sections |
+| `src/lib/guideTemplate.js` | The shape of a guide, its playstyles and sections; converts old guides |
 | `src/App.css` | Theme (colors are variables at the top) |
 | `src-tauri/` | Desktop wrapper config; `capabilities/default.json` limits file access to `Documents/VoliGuides` |
 | `src-tauri/icons/app-icon.svg` | Source for the app icon. After editing it, run `npx tauri icon src-tauri/icons/app-icon.svg` and delete the `android`/`ios` folders and `64x64.png` it adds |

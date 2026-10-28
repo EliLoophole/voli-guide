@@ -21,6 +21,12 @@ TypeScript) + Vite. See README.md for commands and the project map.
 - The user's Documents folder is redirected to OneDrive:
   `C:\Users\elija\OneDrive\Documents\VoliGuides`. Guides are **not** in git; that folder is the
   only copy.
+- A guide is `{ champion, updated, playstyles: [...] }`. Each playstyle holds everything
+  editable (name, difficulty, patch, runes, summoners, build, text sections). Older files have
+  those fields at the top level; `withDefaults` converts them, and `loadGuide` first copies the
+  original to `VoliGuides/_before-playstyles/`. Copy/Paste of a playstyle between matchups
+  uses an in-app clipboard (`copied` state in `App.jsx`), not the system clipboard; it's
+  forgotten when the app closes.
 - `dragDropEnabled: false` in `tauri.conf.json` is required for HTML5 drag-to-reorder of items.
 - Rune stat shards are not implemented yet.
 

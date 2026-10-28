@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { loadGuide, saveGuide, storageLabel } from "../lib/storage";
-import { DIFFICULTIES, SECTIONS, newGuide } from "../lib/guideTemplate";
+import { DIFFICULTIES, SECTIONS, newGuide, newPlaystyle } from "../lib/guideTemplate";
 import { shortPatch } from "../lib/ddragon";
 import Icon from "./Icon";
 import RuneEditor from "./RuneEditor";
@@ -8,16 +8,19 @@ import SpellSlots from "./SpellSlots";
 import ItemRow from "./ItemRow";
 import TextSection from "./TextSection";
 import SaveIndicator from "./SaveIndicator";
+import PlaystyleTabs from "./PlaystyleTabs";
 
 const AUTOSAVE_DELAY_MS = 700;
 
-export default function MatchupPage({ game, championId, onBack, onSaved }) {
+export default function MatchupPage({ game, championId, onBack, onSaved, copied, onCopy }) {
   const champ = game.champion(championId);
   const voli = game.champion("Volibear");
   const patch = shortPatch(game.version);
 
   const [guide, setGuide] = useState(undefined); // undefined = loading, null = not written yet
   const [editing, setEditing] = useState(false);
+  const [active, setActive] = useState(0); // which playstyle tab is open
+  const [focusName, setFocusName] = useState(false); // put the cursor in the name box (after adding a tab)
   const [status, setStatus] = useState("idle"); // idle | pending | saving | saved | error
   const dirty = useRef(false); // true when there are changes not yet saved
   const snapshot = useRef(null); // the guide as it was when you clicked Edit
@@ -62,13 +65,53 @@ export default function MatchupPage({ game, championId, onBack, onSaved }) {
     [onSaved],
   );
 
+  // The open playstyle. (Math.min in case one was just deleted or discarded.)
+  const styleIndex = guide ? Math.min(active, guide.playstyles.length - 1) : 0;
+  const style = guide?.playstyles[styleIndex];
+
+  // Changes the open playstyle.
   function update(changes) {
     dirty.current = true;
-    setGuide((g) => ({ ...g, ...changes }));
+    setGuide((g) => ({
+      ...g,
+      playstyles: g.playstyles.map((p, i) => (i === styleIndex ? { ...p, ...changes } : p)),
+    }));
+  }
+
+  // Replaces the whole list of playstyles (add / duplicate / delete) and opens tab `open`.
+  function setPlaystyles(playstyles, open) {
+    dirty.current = true;
+    setGuide((g) => ({ ...g, playstyles }));
+    setActive(open);
+  }
+
+  // Adds a playstyle as a new last tab, opens it, and selects its name so you can type a new one.
+  function addTab(playstyle) {
+    setPlaystyles([...guide.playstyles, playstyle], guide.playstyles.length);
+    setFocusName(true);
+  }
+
+  function selectTab(i) {
+    setActive(i);
+    setFocusName(false);
+  }
+
+  function deletePlaystyle() {
+    setPlaystyles(guide.playstyles.filter((_, i) => i !== styleIndex), Math.max(0, styleIndex - 1));
+  }
+
+  // Copy remembers the open playstyle (in App), Paste adds it here as a new tab.
+  function copyPlaystyle() {
+    onCopy({ from: champ.name, style: structuredClone(style) });
+  }
+
+  function pastePlaystyle() {
+    addTab(structuredClone(copied.style));
   }
 
   function startEditing() {
     snapshot.current = structuredClone(guide);
+    setFocusName(false);
     setEditing(true);
   }
 
@@ -94,7 +137,7 @@ export default function MatchupPage({ game, championId, onBack, onSaved }) {
     );
   }
 
-  const stale = guide && guide.patch && guide.patch !== patch;
+  const stale = style && style.patch && style.patch !== patch;
 
   return (
     <article className="matchup">
@@ -114,21 +157,38 @@ export default function MatchupPage({ game, championId, onBack, onSaved }) {
         </div>
 
         {guide && (
+          <PlaystyleTabs
+            playstyles={guide.playstyles}
+            active={styleIndex}
+            editing={editing}
+            focusName={focusName}
+            copied={copied}
+            onSelect={selectTab}
+            onRename={(name) => update({ name })}
+            onAdd={() => addTab(newPlaystyle(`Playstyle ${guide.playstyles.length + 1}`, patch))}
+            onDuplicate={() => addTab({ ...structuredClone(style), name: `${style.name} (copy)` })}
+            onDelete={deletePlaystyle}
+            onCopy={copyPlaystyle}
+            onPaste={pastePlaystyle}
+          />
+        )}
+
+        {guide && (
           <div className="hero-meta">
             {editing ? (
               <div className="segmented caps">
                 {DIFFICULTIES.map((d) => (
-                  <button key={d} className={guide.difficulty === d ? `on diff-${d}` : ""} onClick={() => update({ difficulty: d })}>
+                  <button key={d} className={style.difficulty === d ? `on diff-${d}` : ""} onClick={() => update({ difficulty: d })}>
                     {d}
                   </button>
                 ))}
               </div>
             ) : (
-              <span className={`badge diff-${guide.difficulty}`}>{guide.difficulty}</span>
+              <span className={`badge diff-${style.difficulty}`}>{style.difficulty}</span>
             )}
 
             <span className={`badge ${stale ? "stale" : ""}`} title={stale ? `Current patch is ${patch}` : undefined}>
-              Patch {guide.patch || "?"}
+              Patch {style.patch || "?"}
               {stale && " · may be outdated"}
             </span>
             {editing && stale && (
@@ -171,14 +231,14 @@ export default function MatchupPage({ game, championId, onBack, onSaved }) {
           <div className="guide-grid">
             <section className="card">
               <h2>Runes</h2>
-              <RuneEditor game={game} runes={guide.runes} editing={editing} onChange={(runes) => update({ runes })} />
+              <RuneEditor game={game} runes={style.runes} editing={editing} onChange={(runes) => update({ runes })} />
             </section>
 
             <section className="card">
               <h2>Summoner spells</h2>
               <SpellSlots
                 game={game}
-                spells={guide.summoners}
+                spells={style.summoners}
                 editing={editing}
                 onChange={(summoners) => update({ summoners })}
               />
@@ -193,9 +253,9 @@ export default function MatchupPage({ game, championId, onBack, onSaved }) {
                   key={key}
                   game={game}
                   label={label}
-                  names={guide.build[key]}
+                  names={style.build[key]}
                   editing={editing}
-                  onChange={(names) => update({ build: { ...guide.build, [key]: names } })}
+                  onChange={(names) => update({ build: { ...style.build, [key]: names } })}
                 />
               ))}
             </section>
@@ -205,7 +265,7 @@ export default function MatchupPage({ game, championId, onBack, onSaved }) {
             <TextSection
               key={s.key}
               label={s.label}
-              value={guide[s.key]}
+              value={style[s.key]}
               editing={editing}
               onChange={(text) => update({ [s.key]: text })}
             />

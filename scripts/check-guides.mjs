@@ -8,7 +8,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { loadGameData, shortPatch } from "../src/lib/ddragon.js";
-import { SECTIONS } from "../src/lib/guideTemplate.js";
+import { SECTIONS, withDefaults } from "../src/lib/guideTemplate.js";
 
 function documentsFolder() {
   // Windows may move Documents into OneDrive, so ask Windows where it is.
@@ -43,34 +43,42 @@ for (const file of files) {
   }
 
   if (guide) {
-    const { runes = {}, summoners = [], build = {} } = guide;
     if (!game.champion(guide.champion)) problems.push(`unknown champion "${guide.champion}"`);
 
-    const primaryTree = game.tree(runes.primaryTree);
-    const secondaryTree = game.tree(runes.secondaryTree);
-    if (runes.primaryTree && !primaryTree) problems.push(`unknown rune tree "${runes.primaryTree}"`);
-    if (runes.secondaryTree && !secondaryTree) problems.push(`unknown rune tree "${runes.secondaryTree}"`);
+    // Check each playstyle. (withDefaults also understands guides from before playstyles.)
+    const { playstyles } = withDefaults(guide);
+    for (const style of playstyles) {
+      // With several playstyles, say which one each message is about.
+      const where = playstyles.length > 1 ? `[${style.name}] ` : "";
+      const problem = (text) => problems.push(where + text);
+      const { runes, summoners, build } = style;
 
-    const inTree = (tree, name) => tree?.rows.flat().some((r) => r.id === game.rune(name)?.id);
-    for (const name of (runes.primary ?? []).filter(Boolean)) {
-      if (!game.rune(name)) problems.push(`unknown rune "${name}"`);
-      else if (primaryTree && !inTree(primaryTree, name)) problems.push(`"${name}" isn't in ${primaryTree.name}`);
-    }
-    for (const name of (runes.secondary ?? []).filter(Boolean)) {
-      if (!game.rune(name)) problems.push(`unknown rune "${name}"`);
-      else if (secondaryTree && !inTree(secondaryTree, name)) problems.push(`"${name}" isn't in ${secondaryTree.name}`);
-    }
+      const primaryTree = game.tree(runes.primaryTree);
+      const secondaryTree = game.tree(runes.secondaryTree);
+      if (runes.primaryTree && !primaryTree) problem(`unknown rune tree "${runes.primaryTree}"`);
+      if (runes.secondaryTree && !secondaryTree) problem(`unknown rune tree "${runes.secondaryTree}"`);
 
-    for (const name of summoners.filter(Boolean)) {
-      if (!game.spell(name)) problems.push(`unknown summoner spell "${name}"`);
-    }
-    for (const [row, names] of Object.entries(build)) {
-      for (const name of names ?? []) if (!game.item(name)) problems.push(`unknown item "${name}" (${row})`);
-    }
+      const inTree = (tree, name) => tree?.rows.flat().some((r) => r.id === game.rune(name)?.id);
+      for (const name of runes.primary.filter(Boolean)) {
+        if (!game.rune(name)) problem(`unknown rune "${name}"`);
+        else if (primaryTree && !inTree(primaryTree, name)) problem(`"${name}" isn't in ${primaryTree.name}`);
+      }
+      for (const name of runes.secondary.filter(Boolean)) {
+        if (!game.rune(name)) problem(`unknown rune "${name}"`);
+        else if (secondaryTree && !inTree(secondaryTree, name)) problem(`"${name}" isn't in ${secondaryTree.name}`);
+      }
 
-    const empty = SECTIONS.filter((s) => !guide[s.key]?.trim()).map((s) => s.label.toLowerCase());
-    if (empty.length) notes.push(`not written yet: ${empty.join(", ")}`);
-    if (guide.patch && guide.patch !== patch) notes.push(`written for patch ${guide.patch}`);
+      for (const name of summoners.filter(Boolean)) {
+        if (!game.spell(name)) problem(`unknown summoner spell "${name}"`);
+      }
+      for (const [row, names] of Object.entries(build)) {
+        for (const name of names ?? []) if (!game.item(name)) problem(`unknown item "${name}" (${row})`);
+      }
+
+      const empty = SECTIONS.filter((s) => !style[s.key]?.trim()).map((s) => s.label.toLowerCase());
+      if (empty.length) notes.push(`${where}not written yet: ${empty.join(", ")}`);
+      if (style.patch && style.patch !== patch) notes.push(`${where}written for patch ${style.patch}`);
+    }
   }
 
   problemCount += problems.length;

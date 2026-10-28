@@ -8,9 +8,10 @@
 // can still try things out.
 
 import { BaseDirectory, exists, mkdir, readDir, readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
-import { withDefaults } from "./guideTemplate";
+import { isOldFormat, withDefaults } from "./guideTemplate";
 
 const FOLDER = "VoliGuides";
+const BACKUP_FOLDER = `${FOLDER}/_before-playstyles`; // "_" so listGuides skips it
 const baseDir = BaseDirectory.Document;
 const inDesktopApp = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 
@@ -38,6 +39,13 @@ const desktop = {
     await ensureFolder();
     await writeTextFile(fileFor(guide.champion), JSON.stringify(guide, null, 2), { baseDir });
   },
+  // Keeps an untouched copy of a guide from before playstyles existed (only once).
+  async backupOldFormat(championId) {
+    const backup = `${BACKUP_FOLDER}/${championId}.json`;
+    if (await exists(backup, { baseDir })) return;
+    if (!(await exists(BACKUP_FOLDER, { baseDir }))) await mkdir(BACKUP_FOLDER, { baseDir, recursive: true });
+    await writeTextFile(backup, await readTextFile(fileFor(championId), { baseDir }), { baseDir });
+  },
 };
 
 const browser = {
@@ -54,6 +62,7 @@ const browser = {
   async save(guide) {
     localStorage.setItem(this.key(guide.champion), JSON.stringify(guide, null, 2));
   },
+  async backupOldFormat() {}, // browser storage is only for trying things out
 };
 
 const backend = inDesktopApp ? desktop : browser;
@@ -62,7 +71,13 @@ export const listGuides = () => backend.list();
 
 export async function loadGuide(championId) {
   const guide = await backend.load(championId);
-  return guide ? withDefaults(guide) : null;
+  if (!guide) return null;
+  // Guides from before playstyles get converted when saved, so back up the original first.
+  // (A failed backup mustn't stop the guide from opening; converting loses nothing.)
+  if (isOldFormat(guide)) {
+    await backend.backupOldFormat(championId).catch((e) => console.error("Couldn't back up old guide", e));
+  }
+  return withDefaults(guide);
 }
 
 export async function saveGuide(guide) {

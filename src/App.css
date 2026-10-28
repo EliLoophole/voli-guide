@@ -201,6 +201,24 @@ main { max-width: 1200px; margin: 0 auto; padding: 24px 28px 64px; }
 .vs-text { color: var(--violet); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.15em; }
 .hero-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
+/* Playstyle tabs (between the champion name and the difficulty/patch row) */
+.playstyle-tabs { display: flex; align-items: flex-end; gap: 4px; flex-wrap: wrap; margin: -4px 0 14px; border-bottom: 1px solid var(--border-strong); }
+.playstyle-tabs .tab {
+  padding: 6px 14px; margin-bottom: -1px; border: 0; border-bottom: 2px solid transparent; border-radius: 6px 6px 0 0;
+  background: none; color: var(--muted); font-weight: 600; outline: none;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.playstyle-tabs .tab:hover { color: var(--text); }
+.playstyle-tabs .tab.on { color: var(--text); border-bottom-color: var(--accent); }
+/* The open tab while editing: a name box with a pencil */
+.playstyle-tabs .tab-name { display: inline-flex; align-items: center; gap: 6px; background: rgba(10, 13, 19, 0.6); cursor: text; }
+.playstyle-tabs .tab-name:focus-within { background: var(--bg); }
+.tab-name input { padding: 0; border: 0; outline: none; background: none; font-weight: 600; }
+.tab-name .pencil { color: var(--muted); font-weight: 400; }
+.tab-name:hover .pencil, .tab-name:focus-within .pencil { color: var(--accent); }
+.tab-actions { display: flex; gap: 14px; margin-left: auto; padding: 0 4px 6px; }
+.link-btn.danger { color: var(--hard); }
+
 .save-indicator { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--muted); animation: pop 0.2s var(--ease); }
 .save-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
 .save-indicator.pending .save-dot { background: var(--even); }
