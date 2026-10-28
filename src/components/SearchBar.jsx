@@ -4,7 +4,8 @@ import Icon from "./Icon";
 
 const MAX_RESULTS = 8;
 
-export default function SearchBar({ champions, written, onSelect }) {
+// large: the big centered version on the home screen. autoFocus: put the cursor in it right away.
+export default function SearchBar({ champions, written, onSelect, large = false, autoFocus = false }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0); // highlighted result
@@ -60,9 +61,10 @@ export default function SearchBar({ champions, written, onSelect }) {
   }
 
   return (
-    <div className="search">
+    <div className={large ? "search large" : "search"}>
       <input
         ref={inputRef}
+        autoFocus={autoFocus}
         value={query}
         placeholder="Search a champion…"
         spellCheck={false}

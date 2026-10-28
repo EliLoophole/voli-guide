@@ -9,7 +9,6 @@ const FILTERS = [
 
 export default function ChampionGrid({ champions, written, onSelect }) {
   const [filter, setFilter] = useState("all");
-  const count = champions.filter((c) => written.has(c.id)).length;
 
   const shown = champions.filter((c) => {
     if (filter === "written") return written.has(c.id);
@@ -20,12 +19,7 @@ export default function ChampionGrid({ champions, written, onSelect }) {
   return (
     <section className="home">
       <div className="home-head">
-        <div>
-          <h1>Volibear matchups</h1>
-          <p className="muted">
-            <strong className="accent">{count}</strong> / {champions.length} guides written
-          </p>
-        </div>
+        <h2>All champions</h2>
         <div className="segmented">
           {FILTERS.map((f) => (
             <button key={f.key} className={filter === f.key ? "on" : ""} onClick={() => setFilter(f.key)}>
@@ -49,24 +43,3 @@ export default function ChampionGrid({ champions, written, onSelect }) {
     </section>
   );
 }
-
-ChampionGrid.Skeleton = function Skeleton() {
-  return (
-    <section className="home">
-      <div className="home-head">
-        <div>
-          <div className="skeleton" style={{ width: 260, height: 32 }} />
-          <div className="skeleton" style={{ width: 160, height: 16, marginTop: 10 }} />
-        </div>
-      </div>
-      <div className="champ-grid">
-        {Array.from({ length: 40 }, (_, i) => (
-          <div key={i} className="champ-tile">
-            <div className="skeleton" style={{ width: 64, height: 64 }} />
-            <div className="skeleton" style={{ width: 50, height: 10 }} />
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-};

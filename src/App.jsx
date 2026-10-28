@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import { loadGameData, shortPatch } from "./lib/ddragon";
+import { loadGameData, shortPatch, splashUrl } from "./lib/ddragon";
 import { listGuides } from "./lib/storage";
 import SearchBar from "./components/SearchBar";
-import ChampionGrid from "./components/ChampionGrid";
+import Home from "./components/Home";
 import MatchupPage from "./components/MatchupPage";
 import { Bolt } from "./components/Icon";
 import "./App.css";
+
+const HOME_SPLASH = splashUrl("Volibear", 1); // skin 1 = Thunder Lord Volibear
 
 export default function App() {
   const [game, setGame] = useState(null);
@@ -33,12 +35,16 @@ export default function App() {
 
   return (
     <div className="app">
+      {/* Splash art behind the home screen (styled in App.css under "Home") */}
+      {!selected && <div className="home-bg" style={{ "--splash": `url(${HOME_SPLASH})` }} />}
+
       <header className="topbar">
         <button className="brand" onClick={() => setSelected(null)}>
           <Bolt />
           <span>Voli Guide</span>
         </button>
-        {game && <SearchBar champions={game.champions} written={written} onSelect={setSelected} />}
+        {/* Home has its own big search bar, so the small one only shows on matchup pages */}
+        {game && selected && <SearchBar champions={game.champions} written={written} onSelect={setSelected} />}
         {game && <span className="patch-tag">Patch {shortPatch(game.version)}</span>}
       </header>
 
@@ -52,11 +58,9 @@ export default function App() {
           </div>
         )}
 
-        {!game && !loadError && <ChampionGrid.Skeleton />}
+        {!game && !loadError && <Home.Skeleton />}
 
-        {game && !selected && (
-          <ChampionGrid champions={game.champions} written={written} onSelect={setSelected} />
-        )}
+        {game && !selected && <Home champions={game.champions} written={written} onSelect={setSelected} />}
 
         {game && selected && (
           <MatchupPage

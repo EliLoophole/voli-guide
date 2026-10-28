@@ -10,6 +10,12 @@ export function normalize(name) {
   return String(name ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
+// Full-size splash art. Skin 0 is the default skin; other numbers are listed
+// under "skins" in cdn/<version>/data/en_US/champion/<Id>.json.
+export function splashUrl(championId, skin = 0) {
+  return `${BASE}/cdn/img/champion/splash/${championId}_${skin}.jpg`;
+}
+
 async function getJson(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Data Dragon request failed (${res.status}): ${url}`);
@@ -35,7 +41,7 @@ export async function loadGameData() {
       title: c.title,
       tags: c.tags,
       icon: `${cdn}/img/champion/${c.image.full}`,
-      splash: `${BASE}/cdn/img/champion/splash/${c.id}_0.jpg`,
+      splash: splashUrl(c.id),
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
 

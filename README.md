@@ -44,8 +44,9 @@ time. Click **More info → Run anyway**.
 | File | What it does |
 |---|---|
 | `src/App.jsx` | Top bar, loads game data, switches between home and matchup page |
+| `src/components/Home.jsx` | Start screen: big centered search over the Thunder Lord splash |
 | `src/components/SearchBar.jsx` | Champion search (`/` to focus, arrows + Enter) |
-| `src/components/ChampionGrid.jsx` | Home grid with written/not-written filter |
+| `src/components/ChampionGrid.jsx` | "Browse all champions" grid with written/not-written filter |
 | `src/components/MatchupPage.jsx` | One matchup: view/edit toggle, autosave |
 | `src/components/RuneEditor.jsx` | Rune tree + rune picking |
 | `src/components/ItemRow.jsx` / `SpellSlots.jsx` / `IconPicker.jsx` | Build, spells, and the icon picker pop-up |
@@ -55,6 +56,7 @@ time. Click **More info → Run anyway**.
 | `src/lib/guideTemplate.js` | The shape of a guide and its sections |
 | `src/App.css` | Theme (colors are variables at the top) |
 | `src-tauri/` | Desktop wrapper config; `capabilities/default.json` limits file access to `Documents/VoliGuides` |
+| `src-tauri/icons/app-icon.svg` | Source for the app icon. After editing it, run `npx tauri icon src-tauri/icons/app-icon.svg` and delete the `android`/`ios` folders and `64x64.png` it adds |
 
 ---
 

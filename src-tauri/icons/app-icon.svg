@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <radialGradient id="sky" cx="50%" cy="40%" r="72%">
+      <stop offset="0" stop-color="#22397a"/>
+      <stop offset="0.55" stop-color="#0f1834"/>
+      <stop offset="1" stop-color="#070a12"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#8fb4ff" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#8fb4ff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bolt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.5" stop-color="#cfe0ff"/>
+      <stop offset="1" stop-color="#7aa2ff"/>
+    </linearGradient>
+    <linearGradient id="claw" x1="0" y1="0" x2="0.5" y2="1">
+      <stop offset="0" stop-color="#5f8dff" stop-opacity="0"/>
+      <stop offset="0.45" stop-color="#5f8dff" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#a98bff" stop-opacity="0.1"/>
+    </linearGradient>
+    <clipPath id="tile"><rect width="1024" height="1024" rx="230"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#tile)">
+    <rect width="1024" height="1024" fill="url(#sky)"/>
+
+    <!-- three claw slashes behind the bolt -->
+    <g fill="url(#claw)">
+      <path d="M120 140 Q461 450 560 900 Q366 505 120 140 Z"/>
+      <path d="M290 140 Q631 450 730 900 Q536 505 290 140 Z"/>
+      <path d="M460 140 Q801 450 900 900 Q706 505 460 140 Z"/>
+    </g>
+
+    <!-- soft glow, then the bolt itself -->
+    <circle cx="512" cy="512" r="360" fill="url(#glow)"/>
+    <path transform="translate(104 104) scale(34)" d="M13 2 4 14h7l-1 8 9-12h-7z"
+          fill="url(#bolt)" stroke="#0a0d13" stroke-width="0.3" stroke-linejoin="round"/>
+  </g>
+</svg>
