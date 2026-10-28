@@ -27,7 +27,8 @@ git push --follow-tags   # pushes the commit and the tag, which starts the build
 
 The build takes ~10–15 minutes (watch it on the repo's **Actions** tab, or `gh run watch`).
 When it finishes, a **draft** release appears on the **Releases** page with the
-`-setup.exe` attached. Check it and click **Publish**.
+`-setup.exe` attached. Check it and click **Publish**. Once it's published, older copies
+of the app show an **Update available** button in the top bar that opens the download page.
 
 The version number only lives in `package.json`; the app reads it from there.
 The installer isn't code-signed, so Windows shows "Windows protected your PC" the first
@@ -53,6 +54,7 @@ time. Click **More info → Run anyway**.
 | `src/components/TextSection.jsx` | Markdown text sections with live preview |
 | `src/lib/ddragon.js` | Fetches champions/items/runes/spells, finds them by name |
 | `src/lib/storage.js` | `listGuides` / `loadGuide` / `saveGuide` — the only code that touches files |
+| `src/lib/updates.js` / `src/components/UpdateNotice.jsx` | On startup, asks GitHub for the latest published release and shows a button if it's newer |
 | `src/lib/guideTemplate.js` | The shape of a guide and its sections |
 | `src/App.css` | Theme (colors are variables at the top) |
 | `src-tauri/` | Desktop wrapper config; `capabilities/default.json` limits file access to `Documents/VoliGuides` |

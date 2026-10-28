@@ -4,6 +4,7 @@ import { listGuides } from "./lib/storage";
 import SearchBar from "./components/SearchBar";
 import Home from "./components/Home";
 import MatchupPage from "./components/MatchupPage";
+import UpdateNotice from "./components/UpdateNotice";
 import { Bolt } from "./components/Icon";
 import "./App.css";
 
@@ -45,6 +46,7 @@ export default function App() {
         </button>
         {/* Home has its own big search bar, so the small one only shows on matchup pages */}
         {game && selected && <SearchBar champions={game.champions} written={written} onSelect={setSelected} />}
+        <UpdateNotice />
         {game && <span className="patch-tag">Patch {shortPatch(game.version)}</span>}
       </header>
 

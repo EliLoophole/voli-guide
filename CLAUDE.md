@@ -48,5 +48,8 @@ TypeScript) + Vite. See README.md for commands and the project map.
 ## Open items (as of 2026-10-28)
 - Not yet confirmed that the `npm run tauri dev` window opens and stays open (on the first run the
   terminal showed the app exit).
-- Ideas discussed: Tauri updater plugin (works with public GitHub releases), a private backup
-  repo for `VoliGuides`, GitHub Issues as a to-do list of matchups to write.
+- The app shows an "Update available" button (`src/lib/updates.js`, GitHub releases API) but
+  doesn't install updates itself. Auto-install would need the Tauri updater plugin plus a
+  signing key stored as a GitHub secret.
+- Ideas discussed: a private backup repo for `VoliGuides`, GitHub Issues as a to-do list of
+  matchups to write.

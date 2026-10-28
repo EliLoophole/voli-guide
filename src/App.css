@@ -67,6 +67,17 @@ main { max-width: 1200px; margin: 0 auto; padding: 24px 28px 64px; }
 .brand:hover .bolt { transform: rotate(-12deg) scale(1.12); }
 .patch-tag { margin-left: auto; color: var(--muted); font-size: 0.8rem; }
 
+/* "Update available" button; takes over pushing things to the right edge when it shows */
+.update-pill {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 8px;
+  padding: 4px 12px; border-radius: 99px; font-size: 0.8rem;
+  background: rgba(95, 141, 255, 0.15); border: 1px solid var(--accent-strong); color: var(--accent);
+  transition: background 0.15s, box-shadow 0.2s;
+}
+.update-pill:hover { background: rgba(95, 141, 255, 0.25); box-shadow: var(--glow); }
+.update-pill + .patch-tag { margin-left: 0; }
+.update-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 1s infinite alternate; }
+
 /* ───────── Buttons & badges ───────── */
 .btn {
   padding: 7px 16px; border-radius: 8px;
