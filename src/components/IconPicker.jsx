@@ -5,8 +5,10 @@ import Icon from "./Icon";
 
 // A pop-up grid of icons with a search box. Enter picks the first match, Esc closes.
 // favoritesKey: when given (e.g. "items"), each icon gets a small ★ and starred ones are listed first.
-export default function IconPicker({ title, options, onPick, onClose, onClear, favoritesKey }) {
+// closeLabel: the bottom button's text ("Done" when picking doesn't close the picker).
+export default function IconPicker({ title, options, onPick, onClose, onClear, favoritesKey, closeLabel = "Cancel" }) {
   const [query, setQuery] = useState("");
+  const [justPicked, setJustPicked] = useState(null); // flashes the icon you just clicked
   const [favorites, setFavorites] = useState(() => (favoritesKey ? loadFavorites(favoritesKey) : null));
 
   const matches = options.filter((o) => normalize(o.name).includes(normalize(query)));
@@ -14,6 +16,12 @@ export default function IconPicker({ title, options, onPick, onClose, onClear, f
   const shown = favorites
     ? [...matches.filter((o) => favorites.has(o.name)), ...matches.filter((o) => !favorites.has(o.name))]
     : matches;
+
+  function pick(name) {
+    setJustPicked(name);
+    setTimeout(() => setJustPicked(null), 600);
+    onPick(name);
+  }
 
   function toggleFavorite(name) {
     const next = new Set(favorites);
@@ -40,13 +48,13 @@ export default function IconPicker({ title, options, onPick, onClose, onClear, f
             placeholder="Search…"
             spellCheck={false}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && shown[0] && onPick(shown[0].name)}
+            onKeyDown={(e) => e.key === "Enter" && shown[0] && pick(shown[0].name)}
           />
         </div>
         <div className="picker-grid">
           {shown.map((o) => (
             <div key={o.name} className="picker-cell">
-              <button className="picker-item" onClick={() => onPick(o.name)} title={o.name}>
+              <button className={justPicked === o.name ? "picker-item picked" : "picker-item"} onClick={() => pick(o.name)} title={o.name}>
                 <Icon src={o.icon} alt={o.name} size={44} />
                 <span>{o.name}</span>
               </button>
@@ -68,7 +76,7 @@ export default function IconPicker({ title, options, onPick, onClose, onClear, f
         <div className="modal-foot">
           {onClear && <button className="btn ghost" onClick={onClear}>Clear slot</button>}
           <span className="spacer" />
-          <button className="btn" onClick={onClose}>Cancel</button>
+          <button className="btn" onClick={onClose}>{closeLabel}</button>
         </div>
       </div>
     </div>

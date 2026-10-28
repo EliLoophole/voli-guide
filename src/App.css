@@ -332,6 +332,9 @@ button.slot:hover .icon, button.slot:hover .plus { box-shadow: var(--glow); }
 .picker-item:hover { background: var(--surface-2); border-color: var(--border-strong); }
 .picker-item:hover .icon { box-shadow: var(--glow); }
 .picker-item span { font-size: 0.72rem; color: var(--muted); text-align: center; line-height: 1.2; }
+/* Quick flash on the icon you just picked (the item picker stays open, so this shows it worked) */
+.picker-item.picked { animation: picked 0.6s var(--ease); }
+@keyframes picked { from { background: rgba(95, 141, 255, 0.35); border-color: var(--accent); } }
 .picker-cell { position: relative; }
 .picker-cell .picker-item { width: 100%; }
 /* Favorite star: small, on the icon's bottom-right corner. Shows on hover, and stays (gold) once starred. */

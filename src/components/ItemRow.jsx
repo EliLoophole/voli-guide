@@ -52,10 +52,8 @@ export default function ItemRow({ game, label, names, editing, onChange, maxGold
           title={maxGold ? `Add item · ${label} (${maxGold} gold or less)` : `Add item · ${label}`}
           options={options}
           favoritesKey="items"
-          onPick={(name) => {
-            onChange([...names, name]);
-            setPicking(false);
-          }}
+          onPick={(name) => onChange([...names, name])} // stays open, so you can add several in a row
+          closeLabel="Done"
           onClose={() => setPicking(false)}
         />
       )}
