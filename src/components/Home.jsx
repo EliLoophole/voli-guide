@@ -20,10 +20,28 @@ export default function Home({ champions, written, onSelect, view, onViewChange 
     opening.current = false;
   }, [view.browsing]);
 
-  function toggleBrowsing() {
-    opening.current = !view.browsing;
-    onViewChange({ ...view, browsing: !view.browsing });
+  function openList() {
+    opening.current = true;
+    onViewChange({ ...view, browsing: true });
   }
+
+  function closeList() {
+    window.scrollTo(0, 0); // to the top first, so the page shrinking doesn't count as a scroll that reopens it
+    onViewChange({ ...view, browsing: false });
+  }
+
+  // Scrolling opens and closes the list: scroll down at all (wheel, scrollbar, keys) to open it,
+  // scroll back to the very top to close it.
+  useEffect(() => {
+    // "At the top" = within 2px, since with display scaling the scroll position can be a fraction like 0.6.
+    function onScroll() {
+      const atTop = window.scrollY < 2;
+      if (!view.browsing && !atTop) openList();
+      else if (view.browsing && atTop) onViewChange({ ...view, browsing: false });
+    }
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }); // no [] here: re-attached after every render, so onScroll always sees the current view
 
   return (
     <>
@@ -33,10 +51,13 @@ export default function Home({ champions, written, onSelect, view, onViewChange 
           <strong className="accent">{count}</strong> / {champions.length} guides written
         </p>
         <SearchBar champions={champions} written={written} onSelect={onSelect} large autoFocus />
-        <button className="link-btn" onClick={toggleBrowsing}>
+        <button className="link-btn" onClick={view.browsing ? closeList : openList}>
           {view.browsing ? "Hide champion list" : "Browse all champions"}
         </button>
       </section>
+
+      {/* A little extra height while the list is closed, so there's a scrollbar to scroll down with */}
+      {!view.browsing && <div className="home-scroll-room" />}
 
       {view.browsing && (
         <div ref={gridRef} className="home-browse">

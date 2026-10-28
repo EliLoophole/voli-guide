@@ -163,6 +163,7 @@ main { max-width: 1200px; margin: 0 auto; padding: 24px 28px 64px; }
   background: rgba(18, 23, 34, 0.85); backdrop-filter: blur(6px);
 }
 .search.large .search-hint { right: 16px; }
+.home-scroll-room { height: 48px; }
 .home-browse { scroll-margin-top: 72px; } /* stop below the sticky top bar when scrolled to */
 .home-head h2 { margin: 0; }
 .home-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
