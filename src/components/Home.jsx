@@ -3,7 +3,7 @@ import SearchBar from "./SearchBar";
 import ChampionGrid from "./ChampionGrid";
 
 // Start screen: a big search bar in the middle, with the full champion grid one click away.
-// view = { browsing, filter, scrollY } lives in App, so going back from a matchup returns to the same view.
+// view = { browsing, filter, showAll, scrollY } lives in App, so going back from a matchup returns to the same view.
 export default function Home({ champions, written, onSelect, view, onViewChange }) {
   const gridRef = useRef(null);
   const opening = useRef(false); // true right after clicking "Browse all champions"
@@ -67,6 +67,8 @@ export default function Home({ champions, written, onSelect, view, onViewChange 
             onSelect={onSelect}
             filter={view.filter}
             setFilter={(filter) => onViewChange({ ...view, filter })}
+            showAll={view.showAll}
+            setShowAll={(showAll) => onViewChange({ ...view, showAll })}
           />
         </div>
       )}

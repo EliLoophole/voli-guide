@@ -11,10 +11,10 @@ import "./App.css";
 
 const HOME_SPLASH = splashUrl("Volibear", 1); // skin 1 = Thunder Lord Volibear
 
-// The home screen as it first looks: champion list closed, "All" filter, scrolled to the top.
-const HOME_START = { browsing: false, filter: "all", scrollY: 0 };
+// The home screen as it first looks: champion list closed, "All" filter, top laners only, scrolled to the top.
+const HOME_START = { browsing: false, filter: "all", showAll: false, scrollY: 0 };
 // What the matchup page's back link says, depending on where it goes back to.
-const BACK_LABELS = { all: "All champions", written: "Written", todo: "Not written" };
+const BACK_LABELS = { all: "Champion list", written: "Written", todo: "Not written" };
 
 export default function App() {
   const [game, setGame] = useState(null);

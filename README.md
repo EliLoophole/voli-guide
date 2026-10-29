@@ -72,6 +72,7 @@ time. Click **More info → Run anyway**.
 | `src/lib/storage.js` | `listGuides` / `loadGuide` / `saveGuide` — the only code that touches files |
 | `src/lib/updates.js` / `src/components/UpdateNotice.jsx` | On startup, asks GitHub for the latest published release and shows a button if it's newer |
 | `src/lib/favorites.js` | Favorite items (★ in the item picker, listed first), saved in the app's storage on this PC, not in `VoliGuides` |
+| `src/lib/toplaners.js` | Hand-kept list of common top laners (>1% top pick rate); the champion list shows only these until "Show all" |
 | `src/lib/guideTemplate.js` | The shape of a guide, its playstyles and sections; converts old guides |
 | `src/App.css` | Theme (colors are variables at the top) |
 | `src-tauri/` | Desktop wrapper config; `capabilities/default.json` limits file access to `Documents/VoliGuides` |
