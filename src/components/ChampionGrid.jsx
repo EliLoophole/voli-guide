@@ -1,4 +1,5 @@
 import Icon from "./Icon";
+import WrittenDot from "./WrittenDot";
 import { isTopLaner } from "../lib/toplaners";
 
 const FILTERS = [
@@ -45,7 +46,7 @@ export default function ChampionGrid({ champions, written, onSelect, filter, set
           <button key={c.id} className="champ-tile" onClick={() => onSelect(c.id)}>
             <Icon src={c.icon} alt={c.name} />
             <span className="champ-name">{c.name}</span>
-            {written.has(c.id) && <span className="written-dot" title="Guide written" />}
+            {written.has(c.id) && <WrittenDot difficulty={written.get(c.id)} />}
           </button>
         ))}
       </div>

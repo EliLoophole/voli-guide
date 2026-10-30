@@ -70,3 +70,10 @@ export function withDefaults(guide) {
   const playstyles = guide.playstyles.length ? guide.playstyles : [{}];
   return { ...guide, playstyles: playstyles.map(playstyleWithDefaults) };
 }
+
+// The easiest difficulty among a guide's playstyles ("easy" beats "even" beats "hard").
+// Used to color the dot next to written champions.
+export function easiestDifficulty(guide) {
+  const ranks = withDefaults(guide).playstyles.map((s) => DIFFICULTIES.indexOf(s.difficulty)).filter((r) => r >= 0);
+  return ranks.length ? DIFFICULTIES[Math.min(...ranks)] : null;
+}

@@ -63,6 +63,7 @@ time. Click **More info → Run anyway**.
 | `src/components/Home.jsx` | Start screen: big centered search over the Thunder Lord splash |
 | `src/components/SearchBar.jsx` | Champion search (`/` to focus, arrows + Enter) |
 | `src/components/ChampionGrid.jsx` | "Browse all champions" grid with written/not-written filter |
+| `src/components/WrittenDot.jsx` | Dot next to written champions, colored by the guide's easiest playstyle (green/yellow/red) |
 | `src/components/MatchupPage.jsx` | One matchup: view/edit toggle, autosave |
 | `src/components/PlaystyleTabs.jsx` | Playstyle tabs: switch, and while editing rename / add / duplicate / delete, or copy one and paste it into another matchup |
 | `src/components/RuneEditor.jsx` | Rune tree + rune picking |

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { normalize } from "../lib/ddragon";
 import Icon from "./Icon";
+import WrittenDot from "./WrittenDot";
 
 const MAX_RESULTS = 8;
 
@@ -95,7 +96,7 @@ export default function SearchBar({ champions, written, onSelect, large = false,
             >
               <Icon src={c.icon} alt={c.name} size={28} />
               <span>{c.name}</span>
-              {written.has(c.id) && <span className="written-dot" title="Guide written" />}
+              {written.has(c.id) && <WrittenDot difficulty={written.get(c.id)} />}
             </li>
           ))}
         </ul>

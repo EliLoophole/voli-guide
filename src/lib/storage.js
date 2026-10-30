@@ -1,5 +1,6 @@
-// The ONLY place that reads and writes guides. Everything else calls these three:
+// The ONLY place that reads and writes guides. Everything else calls these:
 //   listGuides()  -> ["Darius", "Garen", ...]   (champion ids that have a guide)
+//   listDifficulties() -> Map { "Darius" => "easy", ... }   (easiest playstyle of each guide)
 //   loadGuide(id) -> guide object, or null if none written yet
 //   saveGuide(guide)
 //
@@ -8,7 +9,7 @@
 // can still try things out.
 
 import { BaseDirectory, exists, mkdir, readDir, readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
-import { isOldFormat, withDefaults } from "./guideTemplate";
+import { easiestDifficulty, isOldFormat, withDefaults } from "./guideTemplate";
 
 const FOLDER = "VoliGuides";
 const BACKUP_FOLDER = `${FOLDER}/_before-playstyles`; // "_" so listGuides skips it
@@ -68,6 +69,24 @@ const browser = {
 const backend = inDesktopApp ? desktop : browser;
 
 export const listGuides = () => backend.list();
+
+// Opens every guide (read only, nothing is converted or saved) to find its easiest playstyle.
+// A file that can't be read still counts as written, just without a difficulty (null).
+export async function listDifficulties() {
+  const ids = await backend.list();
+  const entries = await Promise.all(
+    ids.map(async (id) => {
+      try {
+        const guide = await backend.load(id);
+        return [id, guide ? easiestDifficulty(guide) : null];
+      } catch (e) {
+        console.error(`Couldn't read the ${id} guide`, e);
+        return [id, null];
+      }
+    })
+  );
+  return new Map(entries);
+}
 
 export async function loadGuide(championId) {
   const guide = await backend.load(championId);

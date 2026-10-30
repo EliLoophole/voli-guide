@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { loadGameData, shortPatch, splashUrl } from "./lib/ddragon";
-import { listGuides } from "./lib/storage";
+import { listDifficulties } from "./lib/storage";
 import { currentVersion } from "./lib/updates";
 import SearchBar from "./components/SearchBar";
 import Home from "./components/Home";
@@ -19,7 +19,9 @@ const BACK_LABELS = { all: "Champion list", written: "Written", todo: "Not writt
 export default function App() {
   const [game, setGame] = useState(null);
   const [loadError, setLoadError] = useState(null);
-  const [written, setWritten] = useState(new Set()); // champion ids with a guide
+  // Champions with a guide: a Map of champion id -> easiest playstyle difficulty ("easy" / "even" / "hard").
+  // written.has(id) = is there a guide; written.get(id) = its difficulty (colors the dot).
+  const [written, setWritten] = useState(new Map());
   const [selected, setSelected] = useState(null); // champion id being viewed
   // A playstyle copied with "Copy", for pasting into another matchup: { from: "Aatrox", style } or null.
   // Kept here (not on the matchup page) so it survives switching champions.
@@ -35,8 +37,8 @@ export default function App() {
   }, []);
 
   const refreshWritten = useCallback(() => {
-    listGuides()
-      .then((ids) => setWritten(new Set(ids)))
+    listDifficulties()
+      .then(setWritten)
       .catch((e) => console.error("Couldn't list guides", e));
   }, []);
 

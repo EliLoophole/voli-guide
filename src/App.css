@@ -138,6 +138,10 @@ main { max-width: 1200px; margin: 0 auto; padding: 24px 28px 64px; }
 .search-results .icon { border-radius: 6px; }
 .search-empty { color: var(--muted); cursor: default !important; }
 .written-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); margin-left: auto; }
+/* Dot color = easiest playstyle's difficulty (see WrittenDot.jsx) */
+.written-dot.dot-easy { background: var(--easy); box-shadow: 0 0 8px var(--easy); }
+.written-dot.dot-even { background: var(--even); box-shadow: 0 0 8px var(--even); }
+.written-dot.dot-hard { background: var(--hard); box-shadow: 0 0 8px var(--hard); }
 @keyframes pop { from { opacity: 0; transform: translateY(-4px) scale(0.98); } }
 
 /* ───────── Home ───────── */
